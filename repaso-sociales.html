@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El mapa de Sociales — Repaso para el examen</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#0E241F;
+  --ink-2:#16342C;
+  --tile-1:#2FA36B;   /* selva */
+  --tile-2:#29B6C9;   /* agua */
+  --tile-3:#F2C14E;   /* sol */
+  --tile-4:#E07A2F;   /* tierra */
+  --tile-5:#D94F4F;   /* quetzal */
+  --paper:#FCFDF8;
+  --grout:rgba(255,255,255,.10);
+  --ok:#3ADE97;
+  --no:#FF6B6B;
+  --display:"Fredoka","Trebuchet MS",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible","Verdana",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:
+    radial-gradient(1100px 600px at 10% -10%, #1B4D3E 0%, transparent 60%),
+    radial-gradient(900px 500px at 100% 0%, #12414F 0%, transparent 55%),
+    var(--ink);
+  color:var(--paper);font-family:var(--body);min-height:100vh;-webkit-text-size-adjust:100%;
+}
+.wrap{max-width:900px;margin:0 auto;padding:22px 16px 60px}
+header.top{display:flex;align-items:center;gap:14px;margin-bottom:6px}
+.badge{
+  width:52px;height:52px;flex:0 0 52px;border-radius:14px;
+  background:linear-gradient(135deg,var(--tile-1),var(--tile-2));
+  display:grid;place-items:center;font-size:26px;transform:rotate(-6deg);box-shadow:0 8px 0 rgba(0,0,0,.28)
+}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(22px,5vw,32px);margin:0;line-height:1.05}
+.sub{opacity:.75;font-size:14px;margin:2px 0 0}
+
+.board{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:22px}
+.tile{
+  position:relative;border:0;cursor:pointer;text-align:left;color:var(--paper);
+  background:var(--ink-2);border-radius:16px;padding:14px;min-height:118px;font-family:var(--body);
+  box-shadow:inset 0 0 0 2px var(--grout);transition:transform .15s ease;
+  display:flex;flex-direction:column;justify-content:space-between
+}
+.tile:hover{transform:translateY(-3px)}
+.tile:focus-visible{outline:3px solid var(--tile-3);outline-offset:3px}
+.tile .em{font-size:24px;line-height:1}
+.tile .tt{font-family:var(--display);font-weight:600;font-size:16px;margin:8px 0 0;line-height:1.15}
+.tile .pg{font-size:11px;opacity:.6;margin-top:2px}
+.tile .bar{height:7px;border-radius:99px;background:rgba(255,255,255,.14);margin-top:10px;overflow:hidden}
+.tile .bar i{display:block;height:100%;width:0;border-radius:99px;background:var(--c);transition:width .5s ease}
+.tile .score{position:absolute;top:10px;right:12px;font-family:var(--display);font-size:13px}
+.tile[data-done="1"]{background:linear-gradient(150deg,var(--c) 0%, color-mix(in srgb, var(--c) 55%, var(--ink-2)) 100%);box-shadow:inset 0 0 0 2px rgba(255,255,255,.25),0 6px 0 rgba(0,0,0,.22)}
+.tile[data-done="1"] .tt,.tile[data-done="1"] .em,.tile[data-done="1"] .score{color:#0E241F}
+.tile[data-done="1"] .pg{color:#0E241F;opacity:.7}
+
+.final{margin-top:14px;width:100%;border:0;cursor:pointer;border-radius:18px;padding:16px;
+  background:linear-gradient(120deg,var(--tile-3),var(--tile-4));color:#2a1500;
+  font-family:var(--display);font-weight:700;font-size:18px;box-shadow:0 6px 0 rgba(0,0,0,.28)}
+.final small{display:block;font-family:var(--body);font-weight:400;font-size:12px;opacity:.85;margin-top:3px}
+
+.card{background:rgba(255,255,255,.06);border-radius:20px;padding:18px;box-shadow:inset 0 0 0 2px var(--grout)}
+.qhead{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.back{background:none;border:0;color:var(--paper);opacity:.75;font-family:var(--body);font-size:14px;cursor:pointer;padding:6px 0}
+.back:hover{opacity:1}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dots i{width:9px;height:9px;border-radius:3px;background:rgba(255,255,255,.2)}
+.dots i.ok{background:var(--ok)} .dots i.no{background:var(--no)} .dots i.now{background:var(--tile-3);transform:scale(1.25)}
+.qtxt{font-family:var(--display);font-weight:600;font-size:clamp(19px,4.4vw,26px);line-height:1.25;margin:4px 0}
+.qhint{font-size:14px;opacity:.72;margin:0 0 14px}
+.opts{display:grid;gap:10px}
+.opt{border:0;cursor:pointer;text-align:left;font-family:var(--body);font-size:17px;background:var(--paper);color:var(--ink);
+  border-radius:14px;padding:14px 16px;box-shadow:0 4px 0 rgba(0,0,0,.3);transition:transform .1s ease}
+.opt:hover{transform:translateY(-2px)}
+.opt:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.opt:focus-visible{outline:3px solid var(--tile-3);outline-offset:3px}
+.opt.ok{background:var(--ok);color:#062a18}
+.opt.no{background:var(--no);color:#3a0512}
+.opt[disabled]{cursor:default;transform:none}
+.opt.dim{opacity:.45}
+.typebox{display:flex;gap:10px;flex-wrap:wrap}
+.typebox input{flex:1 1 200px;font-family:var(--body);font-size:19px;padding:14px 16px;border-radius:14px;border:0;
+  background:var(--paper);color:var(--ink);box-shadow:0 4px 0 rgba(0,0,0,.3)}
+.typebox input:focus-visible{outline:3px solid var(--tile-3);outline-offset:2px}
+.btn{border:0;cursor:pointer;border-radius:14px;padding:14px 22px;font-family:var(--display);font-weight:600;font-size:17px;
+  background:var(--tile-2);color:#04302b;box-shadow:0 4px 0 rgba(0,0,0,.3)}
+.btn.alt{background:var(--tile-4);color:#2a1500}
+.btn:active{transform:translateY(2px);box-shadow:0 1px 0 rgba(0,0,0,.3)}
+.btn:focus-visible{outline:3px solid var(--tile-3);outline-offset:3px}
+.fb{margin-top:14px;border-radius:14px;padding:13px 15px;font-size:15px;display:none;line-height:1.45}
+.fb.show{display:block;animation:pop .25s ease}
+.fb.good{background:rgba(58,222,151,.16);box-shadow:inset 0 0 0 2px rgba(58,222,151,.5)}
+.fb.bad{background:rgba(255,107,107,.14);box-shadow:inset 0 0 0 2px rgba(255,107,107,.5)}
+.fb b{font-family:var(--display)}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px;align-items:center}
+.shake{animation:shake .3s}
+@keyframes pop{from{transform:translateY(6px);opacity:0}to{transform:none;opacity:1}}
+@keyframes shake{25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.result{text-align:center;padding:26px 18px}
+.bigscore{font-family:var(--display);font-size:64px;line-height:1;margin:6px 0}
+.stars{font-size:30px;letter-spacing:6px;margin:6px 0 2px}
+.rmsg{font-size:17px;opacity:.9;margin:8px auto 0;max-width:460px}
+.hidden{display:none}
+footer{opacity:.45;font-size:12px;text-align:center;margin-top:26px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="badge">🌎</div>
+    <div>
+      <h1>El mapa de Sociales</h1>
+      <p class="sub">Repaso para el examen de Sociales · martes 4 de agosto</p>
+    </div>
+  </header>
+
+  <section id="home">
+    <p class="sub" style="margin:18px 0 0">Cada región del mapa es un tema del examen. Con 80 o más, la región queda conquistada.</p>
+    <div class="board" id="board"></div>
+    <button class="final" id="btnFinal">Evaluación general
+      <small>20 preguntas mezcladas, como la Evaluación 3 del libro</small>
+    </button>
+    <p class="sub" id="globalNote" style="margin-top:16px"></p>
+  </section>
+
+  <section id="quiz" class="hidden">
+    <div class="card">
+      <div class="qhead">
+        <button class="back" id="btnBack">← Volver al mapa</button>
+        <div class="dots" id="dots"></div>
+      </div>
+      <p class="qhint" id="qtopic"></p>
+      <h2 class="qtxt" id="qtxt"></h2>
+      <div class="opts" id="opts"></div>
+      <div class="fb" id="fb"></div>
+      <div class="row hidden" id="nextRow"><button class="btn" id="btnNext">Siguiente →</button></div>
+    </div>
+  </section>
+
+  <section id="result" class="hidden">
+    <div class="card result">
+      <div class="stars" id="rstars"></div>
+      <div class="bigscore" id="rscore"></div>
+      <p class="rmsg" id="rmsg"></p>
+      <div class="row" style="justify-content:center">
+        <button class="btn alt hidden" id="btnRetryWrong">Repasar los fallos</button>
+        <button class="btn" id="btnHome">Volver al mapa</button>
+      </div>
+    </div>
+  </section>
+
+  <footer>Hecho con las páginas 100–145 del libro de Sociales · Santillana</footer>
+</div>
+
+<script>
+const T = [
+{ id:"flora", em:"🐆", name:"Flora y fauna", pg:"págs. 100–102", c:"var(--tile-1)", q:[
+  {t:"mc",q:"¿Qué es la FLORA?",o:["El grupo de todas las plantas que existen en una región o país","El grupo de animales de una región","El conjunto de ríos y montañas"],a:0},
+  {t:"mc",q:"¿Qué es la FAUNA?",o:["El grupo de especies animales que habitan en una región","El grupo de plantas de una región","Las piedras y el suelo de un lugar"],a:0},
+  {t:"mc",q:"¿Cuál de estos NO tiene vida?",o:["Las piedras","Las plantas","Los animales"],a:0,tip:"Sin vida: el Sol, el agua, las piedras y las montañas. Con vida: plantas, animales y personas."},
+  {t:"mc",q:"«El venado de cola blanca es un mamífero que habita en los bosques.» Es un integrante de la…",o:["fauna","flora"],a:0},
+  {t:"mc",q:"«Las hojas del eucalipto sirven de decoración o como medicina.» Es un integrante de la…",o:["flora","fauna"],a:0},
+  {t:"mc",q:"«Las rosas y los tulipanes se usan para decorar bodas.» Es un integrante de la…",o:["flora","fauna"],a:0},
+  {t:"mc",q:"«El jaguar es uno de los felinos más grandes de América.» Es un integrante de la…",o:["fauna","flora"],a:0},
+  {t:"esc",q:"¿Cuál es el ave nacional de Guatemala?",a:["quetzal","el quetzal"]},
+  {t:"esc",q:"¿Cuál es la flor nacional de Guatemala?",a:["monja blanca","la monja blanca"],tip:"La monja blanca es una orquídea."},
+  {t:"mc",q:"Otras aves muy vistosas de Guatemala son…",o:["el tucán y la guacamaya","el pingüino y el avestruz","el cóndor y el flamenco"],a:0},
+  {t:"mc",q:"En Petén hay animales silvestres como…",o:["el mono araña, el jaguar y el tapir","el oso polar y el lobo","el canguro y el koala"],a:0},
+  {t:"mc",q:"En los ríos de Guatemala hay peces como…",o:["pargos, bagres y tilapias","salmones y bacalaos","pirañas y tiburones"],a:0},
+  {t:"mc",q:"En el océano Pacífico es posible observar…",o:["tortugas marinas y ballenas","focas y morsas","delfines de río"],a:0},
+  {t:"mc",q:"Dos especies en peligro de extinción que hay que cuidar son…",o:["las tortugas marinas y el quetzal","la vaca y la gallina","el perro y el gato"],a:0},
+  {t:"mc",q:"A Petén se le llama «el segundo pulmón de América» porque…",o:["tiene una gran diversidad de árboles y especies","es el departamento más grande","tiene muchos ríos"],a:0,tip:"En Petén hay pino, caoba, ceiba y muchos árboles más."},
+  {t:"mc",q:"Plantas medicinales de Guatemala:",o:["la manzanilla y la sábila","el pino y la ceiba","la rosa y el tulipán"],a:0},
+  {t:"mc",q:"¿Qué planta sirve para teñir las pieles?",o:["el mangle","la manzanilla","la orquídea"],a:0},
+  {t:"mc",q:"Plantas que sirven de alimento:",o:["el chile, el maíz, el café, la arveja y la papa","la orquídea y la monja blanca","el pino y la caoba"],a:0},
+  {t:"mc",q:"«Fértil» quiere decir…",o:["tierra que produce en abundancia","tierra seca y agrietada","tierra con muchas piedras"],a:0},
+  {t:"mc",q:"En el parque arqueológico Tikal (Petén) se puede…",o:["observar animales en su hábitat","pescar tilapias","ver ballenas"],a:0}
+]},
+
+{ id:"recursos", em:"💧", name:"Recursos naturales", pg:"págs. 104–106", c:"var(--tile-2)", q:[
+  {t:"mc",q:"¿Qué son los recursos naturales?",o:["Los elementos que obtenemos de la naturaleza y utilizamos","Las cosas que fabrican las industrias","Los productos que se venden en el mercado"],a:0},
+  {t:"mc",q:"¿Cuáles son los tres tipos de recursos naturales?",o:["Inagotables, renovables y no renovables","Vivos, muertos y artificiales","Grandes, medianos y pequeños"],a:0},
+  {t:"mc",q:"Los INAGOTABLES son los que…",o:["se encuentran en grandes cantidades en la naturaleza","se agotan con el uso","se pueden recuperar si los cuidamos"],a:0,tip:"Inagotables: la energía solar y el aire."},
+  {t:"mc",q:"Los RENOVABLES son los que…",o:["a pesar de que los usemos, pueden recuperarse","nunca se acaban","están debajo del suelo"],a:0,tip:"Renovables: el agua, el suelo, la fauna y la flora."},
+  {t:"mc",q:"Los NO RENOVABLES son los que…",o:["se agotan con el uso","se recuperan solos","se encuentran en el aire"],a:0,tip:"No renovables: el petróleo, el carbón y el hierro. Están debajo del suelo."},
+  {t:"mc",q:"El petróleo es un recurso…",o:["no renovable","renovable","inagotable"],a:0},
+  {t:"mc",q:"El agua es un recurso…",o:["renovable","no renovable","que no sirve para la vida"],a:0},
+  {t:"mc",q:"El aire es un recurso…",o:["inagotable","no renovable","artificial"],a:0},
+  {t:"mc",q:"El carbón y el hierro son recursos…",o:["no renovables","renovables","inagotables"],a:0},
+  {t:"mc",q:"El suelo es…",o:["la capa que cubre la superficie de la Tierra, y es renovable","un recurso que se agota para siempre","un gas de la atmósfera"],a:0},
+  {t:"mc",q:"¿Para qué usan las personas el suelo?",o:["Para cultivar, para la ganadería y para obtener madera","Solo para construir casas","Para producir electricidad"],a:0},
+  {t:"mc",q:"El aire es una mezcla de gases que forman…",o:["la atmósfera","el suelo","el océano"],a:0},
+  {t:"mc",q:"¿Qué gas del aire es indispensable para la vida?",o:["el oxígeno","el humo","el vapor"],a:0,tip:"El oxígeno es un gas que no tiene color ni olor."},
+  {t:"mc",q:"Uso DOMÉSTICO del agua:",o:["lavar trastos y ropa, asear la casa","regar las plantaciones","mover lanchas y barcos"],a:0},
+  {t:"mc",q:"Uso AGRÍCOLA del agua:",o:["regar las plantaciones para que crezcan","bañarse y lavar los trastos","navegar en un barco"],a:0},
+  {t:"mc",q:"Uso del agua para TRANSPORTE:",o:["las lanchas y los barcos que navegan en ríos o mares","el consumo de las personas","el riego de los cultivos"],a:0},
+  {t:"mc",q:"¿Cuál de estas imágenes muestra la renovación de un recurso natural?",o:["Unos niños sembrando una planta","Un río seco","Un carro echando humo"],a:0}
+]},
+
+{ id:"urbrur", em:"🏙️", name:"Entorno urbano y rural", pg:"pág. 108", c:"var(--tile-4)", q:[
+  {t:"mc",q:"La comunidad URBANA es el conjunto de personas que viven en…",o:["las zonas urbanas del municipio: pueblos y ciudades","el campo, cultivando la tierra","las montañas y los bosques"],a:0},
+  {t:"mc",q:"La comunidad RURAL es el conjunto de personas que habita en…",o:["las zonas rurales del municipio","las ciudades grandes","las industrias"],a:0},
+  {t:"esc",q:"¿Cómo se llaman las personas que viven en la comunidad rural?",a:["campesinos","campesino"],tip:"Los campesinos se dedican principalmente a las actividades agrícolas."},
+  {t:"mc",q:"¿A qué se dedican principalmente los campesinos?",o:["A las actividades agrícolas: cultivar la tierra y cuidar animales","A trabajar en oficinas e industrias","Al comercio en los almacenes"],a:0},
+  {t:"mc",q:"En las CIUDADES, la mayoría de las personas trabaja en…",o:["oficinas, almacenes e industrias","el cultivo del maíz","la crianza de vacas y cerdos"],a:0},
+  {t:"mc",q:"En los PUEBLOS, la mayoría de las personas se dedica a…",o:["el comercio y la agricultura","la industria pesada","la minería"],a:0},
+  {t:"mc",q:"¿Por qué el trabajo de los campesinos es importante para las ciudades?",o:["Porque los alimentos que se consumen en los pueblos y ciudades vienen del campo","Porque construyen los edificios","Porque fabrican la ropa"],a:0},
+  {t:"mc",q:"¿Por qué el trabajo de las zonas urbanas es importante para los campesinos?",o:["Porque los campesinos necesitan productos fabricados por las industrias","Porque les regalan comida","Porque les enseñan a sembrar"],a:0},
+  {t:"mc",q:"«En esta comunidad las personas se dedican a actividades relacionadas directamente con el entorno natural.» Es la comunidad…",o:["rural","urbana","antigua"],a:0},
+  {t:"mc",q:"La crianza de vacas, cerdos y gallinas se llama…",o:["ganadería","agricultura","industria"],a:0},
+  {t:"mc",q:"Los campesinos cultivan la tierra para obtener…",o:["frutas y verduras","carros y máquinas","telas y ropa"],a:0}
+]},
+
+{ id:"vivienda", em:"🏠", name:"Los cambios de la vivienda", pg:"págs. 109–110", c:"var(--tile-3)", q:[
+  {t:"mc",q:"¿Qué es la vivienda?",o:["El lugar donde vives con tu familia y te proteges del clima","Un edificio de oficinas","El lugar donde se cultiva la tierra"],a:0},
+  {t:"mc",q:"¿De qué depende la forma en que se construyen las viviendas?",o:["Del clima, el terreno y el gusto de las personas","Solo del dinero","Del día de la semana"],a:0},
+  {t:"mc",q:"1.º En la Antigüedad, las personas vivían en…",o:["las cavernas de las montañas","chozas de paja","castillos"],a:0},
+  {t:"mc",q:"2.º Luego construyeron viviendas rudimentarias, las chozas, con materiales como…",o:["madera, paja y pieles de animales","ladrillo y cemento","vidrio y metal"],a:0},
+  {t:"mc",q:"3.º Después aparecieron construcciones más resistentes como…",o:["los castillos y las fortalezas","los apartamentos","las cuevas"],a:0},
+  {t:"mc",q:"4.º Actualmente las viviendas son…",o:["más cómodas y modernas: casas y apartamentos","chozas de paja","cavernas"],a:0},
+  {t:"mc",q:"¿Cuál es el ORDEN correcto en la historia de la vivienda?",o:["Cuevas → chozas → castillos → casas y apartamentos","Chozas → cuevas → casas → castillos","Castillos → cuevas → chozas → apartamentos"],a:0},
+  {t:"mc",q:"¿Por qué es mejor una vivienda de ladrillo o madera que una de cartón o plástico?",o:["Porque es más resistente y protege mejor","Porque es más bonita","Porque es más barata"],a:0},
+  {t:"mc",q:"Una casa hecha con ladrillo y cemento está en una zona…",o:["puede estar en zona urbana o rural, las dos","solo urbana","solo rural"],a:0,tip:"Lo que define urbano o rural es la zona donde vives, no el material de la casa."}
+]},
+
+{ id:"ambiente", em:"🔥", name:"Problemas ambientales", pg:"págs. 116–117", c:"var(--tile-5)", q:[
+  {t:"mc",q:"¿Qué es el ambiente?",o:["Todo lo que te rodea: las personas, los árboles, los ríos…","Solo los animales","Solo el aire"],a:0},
+  {t:"mc",q:"La DEFORESTACIÓN también se conoce como…",o:["tala inmoderada","sequía","incendio forestal"],a:0,tip:"Deforestación: cortar muchos árboles hasta arrasar bosques."},
+  {t:"mc",q:"¿Qué pasa con las especies cuando hay deforestación?",o:["Muchas migran a un nuevo hogar o mueren","Se reproducen más","No les pasa nada"],a:0},
+  {t:"mc",q:"«Migrar» significa…",o:["trasladarse a vivir de un lugar a otro","morir de hambre","cambiar de color"],a:0},
+  {t:"mc",q:"La SEQUÍA es el problema que provoca que…",o:["los suelos se agrieten y resequen por falta de agua","el fuego se extienda en el bosque","los ríos se llenen de basura"],a:0},
+  {t:"mc",q:"El INCENDIO FORESTAL es…",o:["un fuego que se extiende de manera descontrolada en un bosque","la falta de agua en el suelo","el corte de muchos árboles"],a:0},
+  {t:"mc",q:"¿Qué es la contaminación?",o:["Cuando el agua, el aire y el suelo están sucios","Cuando hace mucho calor","Cuando llueve mucho"],a:0},
+  {t:"mc",q:"Para evitar la contaminación del AGUA se recomienda…",o:["no tirar basura en ríos, lagos o mares","quemar la basura","usar más abonos químicos"],a:0},
+  {t:"mc",q:"Otra forma de cuidar el agua es…",o:["sembrar árboles en las orillas de los ríos","construir más fábricas","talar los árboles cercanos"],a:0},
+  {t:"mc",q:"Para evitar la contaminación del SUELO se recomienda…",o:["depositar la basura en el lugar adecuado y evitar la tala inmoderada","tirar la basura al río","usar cualquier abono"],a:0},
+  {t:"mc",q:"Para conservar el AIRE se debe…",o:["sembrar árboles y evitar la quema de basura","quemar la basura en el patio","usar más carros"],a:0},
+  {t:"mc",q:"El aumento de la temperatura de la Tierra ha provocado…",o:["tormentas, huracanes y olas de calor","más bosques","menos lluvia contaminada"],a:0},
+  {t:"mc",q:"Una acción para reducir los gases contaminantes es…",o:["caminar o usar bicicleta en lugar del automóvil","usar el carro todos los días","dejar las luces encendidas"],a:0},
+  {t:"mc",q:"La responsabilidad ambiental incluye…",o:["reciclar papel, vidrio y metal, y usar solo la energía necesaria","botar la basura donde sea","gastar mucha agua"],a:0}
+]},
+
+{ id:"emergencia", em:"🌋", name:"Cómo actuar en una emergencia", pg:"pág. 120", c:"var(--tile-4)", q:[
+  {t:"mc",q:"¿Qué es una emergencia?",o:["Una situación inesperada que puede provocar consecuencias negativas","Una fiesta familiar","Un día de clases normal"],a:0},
+  {t:"mc",q:"Las emergencias suelen ser ocasionadas por amenazas naturales como…",o:["los volcanes, los sismos y las inundaciones","los exámenes","el tráfico"],a:0},
+  {t:"mc",q:"ANTES de la emergencia hay que…",o:["identificar las amenazas de tu municipio y acordar con la familia un lugar de encuentro","correr rápido","gritar para avisar"],a:0},
+  {t:"mc",q:"¿Qué más se hace ANTES de una emergencia?",o:["Preparar un equipo de emergencias y participar en simulacros","Esperar a que pase","Salir de la casa"],a:0},
+  {t:"mc",q:"DURANTE la emergencia hay que…",o:["mantener la calma y no correr","correr lo más rápido posible","esconderse solo"],a:0},
+  {t:"mc",q:"¿Dónde hay que protegerse durante la emergencia?",o:["En las zonas seguras","Debajo de las ventanas","En las gradas"],a:0},
+  {t:"mc",q:"DESPUÉS de la emergencia hay que…",o:["reunirse con los demás en el punto de encuentro","irse a jugar","volver corriendo a la casa"],a:0},
+  {t:"mc",q:"También después hay que…",o:["ayudar a confirmar que todos estén bien y seguir las instrucciones de los grupos de socorro","tomar fotos","gritar"],a:0},
+  {t:"mc",q:"¿Por qué es importante mantener la calma en una emergencia?",o:["Porque así se puede seguir instrucciones y evitar que todos se asusten","Porque así se llega antes","Porque es divertido"],a:0},
+  {t:"mc",q:"La solidaridad en un desastre se manifiesta…",o:["ayudando: recolectando ropa, víveres, agua y comida para los afectados","mirando las noticias","quedándose callado"],a:0}
+]},
+
+{ id:"seguridad", em:"🚸", name:"Medidas de seguridad", pg:"pág. 121", c:"var(--tile-5)", q:[
+  {t:"mc",q:"¿Qué es un accidente?",o:["Un suceso inesperado en el que pueden resultar afectadas personas o bienes","Una emergencia planificada","Un simulacro"],a:0},
+  {t:"mc",q:"Medida de seguridad EN LA CASA:",o:["Evitar jugar con objetos afilados, con fuego y con los tomacorrientes","Correr por los pasillos","Apagar la luz con las manos mojadas"],a:0},
+  {t:"mc",q:"¿Cómo se debe apagar la luz?",o:["Con las manos secas","Con las manos mojadas","Con un objeto de metal"],a:0},
+  {t:"mc",q:"Medida de seguridad EN EL COLEGIO:",o:["Mantener despejados los pasillos y conocer las vías de evacuación","Correr en las gradas","Cerrar las salidas"],a:0},
+  {t:"mc",q:"Las vías de evacuación son…",o:["las salidas de emergencia","las ventanas del salón","los pasillos del recreo"],a:0},
+  {t:"mc",q:"Medida de seguridad EN EL CARRO O EL AUTOBÚS:",o:["Permanecer sentado, usar cinturón y silla adecuada para niños","Sacar la mano por la ventana","Pararse cuando el carro va en marcha"],a:0},
+  {t:"mc",q:"La medida de seguridad que se relaciona con un cuchillo es:",o:["Evitar manipular o jugar con objetos afilados o con puntas","Mantener despejados los pasillos","Usar cinturón de seguridad"],a:0},
+  {t:"mc",q:"Además del botiquín de primeros auxilios, es útil tener a mano…",o:["un silbato y los números de teléfono de emergencia","una pelota","una linterna sin pilas"],a:0},
+  {t:"esc",q:"Número de los Bomberos Voluntarios",a:["122"]},
+  {t:"esc",q:"Número de los Bomberos Municipales",a:["123"]},
+  {t:"esc",q:"Número de la Policía Nacional Civil",a:["110"]},
+  {t:"esc",q:"Número de la Conred",a:["119"]}
+]},
+
+{ id:"energia", em:"⚡", name:"La energía", pg:"págs. 132–133", c:"var(--tile-3)", q:[
+  {t:"mc",q:"La mayor parte de la energía eléctrica que consumimos proviene de…",o:["combustibles como el petróleo","el viento","el Sol"],a:0,tip:"El petróleo no se puede renovar y su uso contamina mucho."},
+  {t:"mc",q:"¿Cuáles son los nuevos tipos de energía?",o:["La solar, la eólica y la hídrica","La solar, la nuclear y la del carbón","La eólica, la del petróleo y la del gas"],a:0},
+  {t:"mc",q:"La energía HÍDRICA se obtiene…",o:["aprovechando la fuerza y el movimiento de las corrientes de agua","del viento","del Sol"],a:0},
+  {t:"mc",q:"La energía EÓLICA proviene…",o:["del viento y las corrientes de aire","del agua de los ríos","del petróleo"],a:0},
+  {t:"mc",q:"La energía SOLAR se obtiene…",o:["del Sol, con paneles o celdas solares","de los molinos","de las hidroeléctricas"],a:0},
+  {t:"mc",q:"¿Cuál es la principal fuente de energía del planeta?",o:["El Sol","El petróleo","El viento"],a:0,tip:"Sin la luz y el calor del Sol, la Tierra se congelaría y la vida desaparecería."},
+  {t:"mc",q:"¿Verdadero o falso? La energía hídrica usa el fuego para producir energía.",o:["Falso","Verdadero"],a:0,tip:"Usa el movimiento del agua, no el fuego."},
+  {t:"mc",q:"¿Verdadero o falso? La energía hídrica es limpia y renovable.",o:["Verdadero","Falso"],a:0},
+  {t:"mc",q:"Para usar la energía eólica se colocan…",o:["molinos que giran con la fuerza del viento","paneles solares","represas"],a:0},
+  {t:"mc",q:"Una catarata que mueve turbinas produce energía…",o:["hídrica","eólica","solar"],a:0},
+  {t:"mc",q:"Unos paneles en el techo de una casa producen energía…",o:["solar","hídrica","eólica"],a:0},
+  {t:"mc",q:"Ríos de Guatemala que se aprovechan para producir energía:",o:["el Motagua, el Usumacinta y La Pasión","el Amazonas y el Nilo","el Danubio y el Rin"],a:0},
+  {t:"mc",q:"¿Por qué la energía hídrica genera menos contaminación?",o:["Porque no necesita combustibles para funcionar","Porque usa poca agua","Porque es más cara"],a:0}
+]},
+
+{ id:"tecno", em:"🚜", name:"La tecnología", pg:"págs. 136–137", c:"var(--tile-2)", q:[
+  {t:"mc",q:"¿Qué es la tecnología?",o:["El conjunto de conocimientos y técnicas que permiten crear herramientas y máquinas","Solo las computadoras","Los juegos de video"],a:0},
+  {t:"mc",q:"Herramientas que se usan para cultivar:",o:["machetes, azadones, arados, palas y rastrillos","martillos y clavos","tijeras y pinceles"],a:0},
+  {t:"mc",q:"En la AGRICULTURA, la tecnología permite…",o:["cultivar en menos tiempo y con menos esfuerzo, con tractores y cosechadoras","curar enfermedades","enviar mensajes"],a:0},
+  {t:"mc",q:"¿Qué área de la tecnología se beneficia con aparatos que sirven para diagnosticar enfermedades?",o:["La tecnología para la salud","La tecnología para la agricultura","La tecnología para la educación"],a:0},
+  {t:"mc",q:"«Diagnóstico» es…",o:["el conjunto de pasos que se siguen para averiguar qué enfermedad padece una persona","una máquina del hospital","un tipo de medicina"],a:0},
+  {t:"mc",q:"En la industria TEXTIL se usan máquinas eléctricas para…",o:["producir hilos, tejer las fibras y elaborar prendas","cosechar maíz","curar enfermos"],a:0},
+  {t:"mc",q:"¿Qué se conserva en Guatemala para hacer los tejidos típicos?",o:["El telar de cintura","El tractor","La cosechadora"],a:0},
+  {t:"mc",q:"Hace miles de años, para comunicarse a largas distancias se usaban…",o:["señales de humo y palomas mensajeras","teléfonos","radios"],a:0},
+  {t:"mc",q:"El traslado de personas y mercancías se realiza por vía…",o:["terrestre, aérea o marítima","solo terrestre","solo aérea"],a:0},
+  {t:"mc",q:"El tren bala, que recorre grandes distancias en poco tiempo, se usa en…",o:["Japón","Guatemala","México"],a:0},
+  {t:"mc",q:"En la EDUCACIÓN, la tecnología se usa con…",o:["computadoras, páginas web y libros digitales en tabletas","arados y azadones","telares"],a:0},
+  {t:"mc",q:"Transportes FLUVIALES son los que se desplazan…",o:["por los ríos, como las lanchas y los botes","por el aire","por las carreteras"],a:0},
+  {t:"mc",q:"Transportes MARÍTIMOS:",o:["los barcos y submarinos, que se desplazan por el mar","los trenes y los carros","los aviones y helicópteros"],a:0},
+  {t:"mc",q:"Logros de la cultura maya:",o:["observaron los astros, determinaron eclipses, crearon calendarios y construyeron pirámides","inventaron el tren bala","construyeron hidroeléctricas"],a:0},
+  {t:"mc",q:"Los mayas también concibieron técnicas para…",o:["cultivar la tierra y desviar ríos para regar los campos","fabricar carros","producir electricidad"],a:0},
+  {t:"mc",q:"¿Por qué la cultura maya es digna de admiración?",o:["Porque logró todo eso sin la tecnología que se usa actualmente","Porque tenía máquinas modernas","Porque vivía en ciudades grandes"],a:0}
+]}
+];
+
+/* ============ MOTOR ============ */
+const $ = s => document.querySelector(s);
+const state = { topic:null, list:[], i:0, wrong:[], answered:false, scores:{} };
+const norm = s => s.toLowerCase().trim().normalize("NFD").replace(/[\u0300-\u036f]/g,"")
+  .replace(/[.,;!¡?¿"«»]/g,"").replace(/\s+/g," ");
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.random()*(i+1)|0;[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function drawBoard(){
+  const b=$("#board"); b.innerHTML="";
+  T.forEach(t=>{
+    const sc=state.scores[t.id]; const pct=sc?Math.round(sc.ok/sc.tot*100):0;
+    const el=document.createElement("button");
+    el.className="tile"; el.style.setProperty("--c",t.c);
+    if(sc&&pct>=80) el.dataset.done="1";
+    el.innerHTML=`<div><span class="em">${t.em}</span>
+      <p class="tt">${t.name}</p><p class="pg">${t.pg}</p></div>
+      <div><div class="bar"><i style="width:${pct}%"></i></div></div>
+      ${sc?`<span class="score">${pct}</span>`:""}`;
+    el.onclick=()=>start(t,t.q);
+    b.appendChild(el);
+  });
+  const done=T.filter(t=>state.scores[t.id]&&state.scores[t.id].ok/state.scores[t.id].tot>=.8).length;
+  $("#globalNote").textContent = done===0 ? "Todavía no hay regiones conquistadas. Empieza por la que quieras."
+    : done===T.length ? "¡Mapa completo! Ahora sí: evaluación general."
+    : `Regiones conquistadas: ${done} de ${T.length}.`;
+}
+
+function start(topic,questions){
+  state.topic=topic; state.list=shuffle(questions); state.i=0; state.wrong=[];
+  $("#home").classList.add("hidden"); $("#result").classList.add("hidden");
+  $("#quiz").classList.remove("hidden");
+  $("#qtopic").textContent = topic ? `${topic.em} ${topic.name} · ${topic.pg}` : "🗺️ Evaluación general · todos los temas";
+  render();
+}
+
+function render(){
+  state.answered=false;
+  const q=state.list[state.i];
+  $("#qtxt").textContent=q.q;
+  $("#fb").className="fb"; $("#fb").innerHTML="";
+  $("#nextRow").classList.add("hidden");
+  $("#dots").innerHTML=state.list.map((_,k)=>`<i class="${k<state.i?(state.wrong.includes(state.list[k])?'no':'ok'):(k===state.i?'now':'')}"></i>`).join("");
+  const box=$("#opts"); box.innerHTML="";
+  if(q.t==="mc"){
+    const opts=q._sh||(q._sh=shuffle(q.o.map((txt,idx)=>({txt,ok:idx===q.a}))));
+    opts.forEach(o=>{
+      const b=document.createElement("button");
+      b.className="opt"; b.textContent=o.txt;
+      b.onclick=()=>answer(o.ok,b,q,q.o[q.a]);
+      box.appendChild(b);
+    });
+  }else{
+    const div=document.createElement("div"); div.className="typebox";
+    div.innerHTML=`<input id="inp" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Escribe aquí…">
+      <button class="btn" id="btnCheck">Comprobar</button>`;
+    box.appendChild(div);
+    const go=()=>{
+      const v=$("#inp").value; if(!v.trim())return;
+      const ok=q.a.some(x=>norm(x)===norm(v));
+      $("#inp").disabled=true; $("#btnCheck").disabled=true;
+      answer(ok,null,q,q.a[0]);
+    };
+    $("#btnCheck").onclick=go;
+    $("#inp").addEventListener("keydown",e=>{if(e.key==="Enter")go()});
+    setTimeout(()=>$("#inp")&&$("#inp").focus(),50);
+  }
+}
+
+const bravo=["¡Muy bien!","¡Correcto!","¡Perfecto!","¡Eso es!","¡Excelente!"];
+function answer(ok,btn,q,right){
+  if(state.answered)return; state.answered=true;
+  document.querySelectorAll(".opt").forEach(b=>{
+    b.disabled=true;
+    if(b.textContent===right) b.classList.add("ok"); else b.classList.add("dim");
+  });
+  if(btn&&!ok){btn.classList.remove("dim");btn.classList.add("no","shake")}
+  if(!ok) state.wrong.push(q);
+  const fb=$("#fb");
+  fb.className="fb show "+(ok?"good":"bad");
+  fb.innerHTML=(ok?`<b>${bravo[Math.random()*bravo.length|0]}</b> `:`<b>Casi.</b> La respuesta es <b>${right}</b>. `)+(q.tip||"");
+  $("#nextRow").classList.remove("hidden");
+  $("#btnNext").textContent = state.i>=state.list.length-1 ? "Ver resultado →" : "Siguiente →";
+  setTimeout(()=>$("#btnNext").focus(),60);
+}
+
+$("#btnNext").onclick=()=>{state.i++; state.i>=state.list.length?finish():render()};
+
+function finish(){
+  const tot=state.list.length, ok=tot-state.wrong.length, pct=Math.round(ok/tot*100);
+  if(state.topic){
+    const prev=state.scores[state.topic.id];
+    if(!prev||ok/tot>prev.ok/prev.tot) state.scores[state.topic.id]={ok,tot};
+  }
+  $("#quiz").classList.add("hidden"); $("#result").classList.remove("hidden");
+  const st=pct>=95?3:pct>=80?2:pct>=50?1:0;
+  $("#rstars").textContent="★★★".slice(0,st).padEnd(3,"☆");
+  $("#rscore").textContent=pct;
+  $("#rmsg").textContent = pct===100?"Perfecto. Este tema ya está dominado."
+    :pct>=80?"Muy bien. Repasa los fallos y queda listo."
+    :pct>=50?"Vas bien, pero hay que repasar. Dale a «Repasar los fallos»."
+    :"Este tema necesita otra vuelta. Repasa las páginas del libro y vuelve a intentarlo.";
+  $("#btnRetryWrong").classList.toggle("hidden",state.wrong.length===0);
+  drawBoard();
+}
+
+$("#btnRetryWrong").onclick=()=>start(state.topic,state.wrong.slice());
+$("#btnHome").onclick=goHome; $("#btnBack").onclick=goHome;
+function goHome(){
+  $("#quiz").classList.add("hidden"); $("#result").classList.add("hidden");
+  $("#home").classList.remove("hidden"); drawBoard(); window.scrollTo({top:0,behavior:"smooth"});
+}
+$("#btnFinal").onclick=()=>{
+  const pool=[]; T.forEach(t=>shuffle(t.q).slice(0,3).forEach(q=>pool.push(q)));
+  start(null,shuffle(pool).slice(0,20));
+};
+drawBoard();
+</script>
+</body>
+</html>
